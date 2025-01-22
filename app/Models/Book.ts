@@ -1,6 +1,5 @@
 interface Book {
-  tile: string;
+  title: string;
   writer: string;
-  destription: string;
 }
 export default Book;
