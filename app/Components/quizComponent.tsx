@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Book from "../Models/Book";
 import { ArrowRight, Play, RotateCcw } from "lucide-react";
 import normalizeString from "../Services/normalizedStrings";
@@ -54,16 +54,17 @@ function QuizComponent() {
       writer: "Fyodor Dostoevsky",
     },
   ]);
-
+  const duration = 30000;
+  const [progress, setProgress] = useState(0);
   const [count, setCount] = useState<number>(0);
   const [correct, setCorrect] = useState<boolean>(false);
   const [wrong, setWrong] = useState<boolean>(false);
-  const [needToRestart, setNeedToRestart] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>("");
   const [points, setPoints] = useState<number>(0);
-  const [duration, setDuration] = useState<number>(10000);
   const [initButton, setInitButton] = useState<boolean>(true);
-  const [progress, setProgress] = useState(0);
   const [canStart, setCanStart] = useState(true);
+  const [needToRestart, setNeedToRestart] = useState<boolean>(false);
+  const [isDisable, setIsDesable] = useState<boolean>(false);
   function addPoints() {
     setPoints(points + 15);
     localStorage.setItem("points", JSON.stringify(points));
@@ -86,19 +87,8 @@ function QuizComponent() {
       setWrong(true);
       setInterval(() => setWrong(false), 2000);
     }
+    return;
   }
-
-  const RestartGame = () => {
-    // Fazer request novamente na API e buscar novos livros
-    setCount(0);
-    setNeedToRestart(true);
-  };
-  const RestartGameButton = () => {
-    setNeedToRestart(false);
-    setDuration(30000);
-    StartGame();
-  };
-
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -106,70 +96,51 @@ function QuizComponent() {
     const writerName = books[count].writer;
 
     checkAnswer(userResponse, writerName);
-
+    setInputValue("");
     event.currentTarget.reset();
   }
+
+  const RestartGame = () => {
+    // Fazer request novamente na API e buscar novos livros
+    setCount(0);
+    setNeedToRestart(true);
+    setInputValue("");
+  };
+  const RestartGameButton = () => {
+    setNeedToRestart(false);
+    StartGame();
+  };
   const StartGame = () => {
     if (!canStart) return;
-
+    setIsDesable(true);
+    setInputValue("");
     setInitButton(false);
     setCanStart(false);
 
     let elapsedTime = 0;
+    const startTime = Date.now();
     const intervalDuration = 100;
 
-    const interval = setInterval(() => {
-      elapsedTime += intervalDuration;
-      const newProgress = Math.min((elapsedTime / duration) * 100, 100);
-
-      setProgress(newProgress);
-
-      if (newProgress >= 100) {
-        clearInterval(interval);
-        handleGameEnd();
-      }
-    }, intervalDuration);
-
     const handleGameEnd = () => {
+      setIsDesable(false);
       setProgress(0);
       setCanStart(true);
       RestartGame();
     };
 
+    const interval = setInterval(() => {
+      elapsedTime = Date.now() - startTime;
+      const newProgress = Math.min((elapsedTime / duration) * 100, 100);
+
+      if (newProgress < 100) {
+        setProgress(newProgress);
+      } else {
+        clearInterval(interval);
+        handleGameEnd();
+      }
+    }, intervalDuration);
     return () => clearInterval(interval);
   };
-
-  // const StartGame = () => {
-  //   if (!canStart) return;
-  //
-  //   setInitButton(false);
-  //   setCanStart(false);
-  //
-  //   const startTime = Date.now();
-  //
-  //   const updateProgress = (interval) => {
-  //     const elapsedTime = Date.now() - startTime;
-  //     const newProgress = Math.min((elapsedTime / duration) * 100, 100);
-  //
-  //     setProgress(newProgress);
-  //
-  //     if (newProgress >= 100) {
-  //       clearInterval(interval);
-  //       handleGameEnd();
-  //     }
-  //   };
-  //
-  //   const handleGameEnd = () => {
-  //     setProgress(0);
-  //     setCanStart(true);
-  //     RestartGame();
-  //   };
-  //
-  //   const interval = setInterval(() => updateProgress(interval), 100);
-  //
-  //   // Cleanup function in case of unmount
-  //   return () => clearInterval(interval);
-  // };
 
   return (
     <div className="flex antialiased items-center justify-center h-screen p-0 space-y-3 flex-col w-full">
@@ -215,10 +186,15 @@ function QuizComponent() {
           onSubmit={(e) => handleSubmit(e)}
         >
           <input
+            id="userResponse"
             className={`input input-bordered ${wrong ? "input-error" : ""} ${correct ? "input-success" : ""}`}
             type="text"
             placeholder="Digite o nome do autor"
             name="userResponse"
+            onChange={(e) => setInputValue(e.target.value)}
+            value={inputValue}
+            autoComplete="off"
+            disabled={!isDisable}
           />
           <button type="submit" className="btn btn-primary">
             <ArrowRight color="white" />
