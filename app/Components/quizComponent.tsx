@@ -1,60 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Book from "../Models/Book";
 import { ArrowRight, Play, RotateCcw } from "lucide-react";
 import normalizeString from "../Services/normalizedStrings";
+import searchBooks from "../Services/fetchBooks";
 function QuizComponent() {
-  const [books, setBooks] = useState<Book[]>([
-    {
-      title: "O Senhor dos Anéis",
-      writer: "J.R.R. Tolkien",
-    },
-    {
-      title: "Pride and Prejudice",
-      writer: "Jane Austen",
-    },
-    {
-      title: "Dom Quixote",
-      writer: "Miguel de Cervantes",
-    },
-    {
-      title: "1984",
-      writer: "George Orwell",
-    },
-    {
-      title: "Moby Dick",
-      writer: "Herman Melville",
-    },
-    {
-      title: "War and Peace",
-      writer: "Leo Tolstoy",
-    },
-    {
-      title: "The Great Gatsby",
-      writer: "F. Scott Fitzgerald",
-    },
-    {
-      title: "To Kill a Mockingbird",
-      writer: "Harper Lee",
-    },
-    {
-      title: "The Catcher in the Rye",
-      writer: "J.D. Salinger",
-    },
-    {
-      title: "Brave New World",
-      writer: "Aldous Huxley",
-    },
-    {
-      title: "The Hobbit",
-      writer: "J.R.R. Tolkien",
-    },
-    {
-      title: "Crime and Punishment",
-      writer: "Fyodor Dostoevsky",
-    },
-  ]);
-  const duration = 30000;
+  const [books, setBooks] = useState<Book[]>([]);
+  const duration = 60000;
   const [progress, setProgress] = useState(0);
   const [count, setCount] = useState<number>(0);
   const [correct, setCorrect] = useState<boolean>(false);
@@ -65,18 +17,41 @@ function QuizComponent() {
   const [canStart, setCanStart] = useState(true);
   const [needToRestart, setNeedToRestart] = useState<boolean>(false);
   const [isDisable, setIsDesable] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      const apiBooks = await searchBooks();
+      if (apiBooks) {
+        setBooks(apiBooks);
+        setCount(Math.floor(Math.random() * books.length));
+      } else {
+        setBooks([
+          {
+            title: "O Senhor dos Anéis",
+            writer: "J.R.R. Tolkien",
+          },
+          {
+            title: "Pride and Prejudice",
+            writer: "Jane Austen",
+          },
+        ]);
+      }
+    };
+
+    fetchBooks();
+  }, [books.length]);
+
   function addPoints() {
     setPoints(points + 15);
     localStorage.setItem("points", JSON.stringify(points));
   }
-
   function checkAnswer(userResponse: string, writerName: string) {
     const normalizeUserResponse = normalizeString(userResponse);
     const normalizeWriterName = normalizeString(writerName);
 
     if (normalizeUserResponse === normalizeWriterName) {
       if (!(count == books.length - 1)) {
-        setCount(count + 1);
+        setCount(Math.floor(Math.random() * books.length));
       } else {
         setNeedToRestart(true);
       }
@@ -100,9 +75,15 @@ function QuizComponent() {
     event.currentTarget.reset();
   }
 
-  const RestartGame = () => {
+  const RestartGame = async () => {
     // Fazer request novamente na API e buscar novos livros
-    setCount(0);
+    const apiBooks = await searchBooks();
+    if (apiBooks) {
+      setBooks(apiBooks);
+    } else {
+      setBooks([{ title: "O Senhor dos Anéis", writer: "J.R.R. Tolkien" }]);
+    }
+    setCount(Math.floor(Math.random() * books.length));
     setNeedToRestart(true);
     setInputValue("");
   };
@@ -141,13 +122,12 @@ function QuizComponent() {
     }, intervalDuration);
     return () => clearInterval(interval);
   };
-
   return (
     <div className="flex antialiased items-center justify-center h-screen p-0 space-y-3 flex-col w-full">
       {initButton && (
         <div className="inset-0 space-y-3 backdrop-blur-md absolute z-20 flex items-center justify-center flex-col">
           <p className="font-bold text-xl text-center w-4/5">
-            Você tem 30 segundos para responder o máximo de perguntas que
+            Você tem 1 minuto para responder o máximo de perguntas que
             conseguir! 🚀
           </p>
           <button onClick={StartGame} className="btn btn-primary">
@@ -179,7 +159,7 @@ function QuizComponent() {
       <div className="justify-center  items-center flex space-y-3 flex-col">
         <h1 className=" text-center text-2xl">Quem escreveu o livro</h1>
         <em className="text-center text-2xl font-bold">
-          &lsquo;&lsquo; {books[count].title} &lsquo;&lsquo; ?
+          &lsquo;&lsquo; {books[count]?.title} &lsquo;&lsquo; ?
         </em>
         <form
           className="flex items-center justify-center gap-3"

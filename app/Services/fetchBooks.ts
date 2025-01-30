@@ -11,14 +11,18 @@ async function searchBooks() {
         body: new URLSearchParams({
           uid: `${process.env.NEXT_PUBLIC_USER_UID}`,
           tokenid: `${process.env.NEXT_PUBLIC_TOKEN_ID}`,
-          term: "Drama",
+          term: "",
           format: "json",
         }),
       },
     );
-    return filterBooks(await response.json());
+
+    const data = await response.json();
+    return filterBooks(data.result);
   } catch (error) {
     console.error("Erro ao buscar livros:", error);
+    return [];
   }
 }
+
 export default searchBooks;
