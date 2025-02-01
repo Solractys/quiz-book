@@ -1,7 +1,7 @@
 "use client";
 
 import { MoonIcon, SunIcon } from "lucide-react";
-import QuizComponent from "./Components/quizComponent";
+import QuizComponent from "./Components/QuizComponent";
 
 function Home() {
   return (

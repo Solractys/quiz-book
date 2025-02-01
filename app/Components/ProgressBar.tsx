@@ -1,37 +1,47 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-type ProgressBarProps = {
-  duration: number;
-  onComplete?: () => void;
-};
+interface ProgressBarProps {
+  progress: number;
+}
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ duration, onComplete }) => {
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const startTime = Date.now();
-
-    const interval = setInterval(() => {
-      const elapsedTime = Date.now() - startTime;
-      const newProgress = Math.min((elapsedTime / duration) * 100, 100);
-
-      setProgress(newProgress);
-
-      if (newProgress >= 100) {
-        clearInterval(interval);
-        if (onComplete) onComplete();
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [duration, onComplete]);
-
+const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
   return (
-    <div className="w-full bg-gray-200 rounded-full h-4">
-      <div
-        className="bg-blue-500 h-4 rounded-full transition-all"
-        style={{ width: `${progress}%` }}
-      ></div>
-    </div>
+    <>
+      <div className="w-3/6 top-36 absolute bg-transparent flex justify-center items-center h-fit">
+        <div
+          className={`radial-progress transition-all ${
+            progress < 50
+              ? "text-green-500"
+              : progress > 75
+                ? "text-red-500 animate-ping"
+                : "text-yellow-300"
+          }`}
+          style={{
+            "--value": progress,
+            "--size": "60px",
+            "--thickness": "9px",
+          }}
+          role="progressbar"
+        ></div>
+      </div>
+      <div className="w-3/6 top-36 absolute bg-transparent flex justify-center items-center h-fit">
+        <div
+          className={`radial-progress transition-all ${
+            progress < 50
+              ? "text-green-500"
+              : progress > 75
+                ? "text-red-500"
+                : "text-yellow-300"
+          }`}
+          style={{
+            "--value": progress,
+            "--size": "60px",
+            "--thickness": "9px",
+          }}
+          role="progressbar"
+        ></div>
+      </div>
+    </>
   );
 };
 
