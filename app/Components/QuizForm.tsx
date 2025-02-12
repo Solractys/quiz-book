@@ -16,6 +16,7 @@ const QuizForm: React.FC<QuizFormProps> = ({
   const [inputValue, setInputValue] = useState<string>("");
   const [wrong, setWrong] = useState<boolean>(false);
   const [correct, setCorrect] = useState<boolean>(false);
+  const  [author, setAuthor] = useState<string>("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,10 +28,12 @@ const QuizForm: React.FC<QuizFormProps> = ({
 
     if (normalizeUserResponse === normalizeWriterName) {
       setCorrect(true);
+      setAuthor("");
       setTimeout(() => setCorrect(false), 2000);
     } else {
       setWrong(true);
-      setTimeout(() => setWrong(false), 2000);
+      setAuthor(writerName);
+      setTimeout(() => setWrong(false), 3000);
     }
 
     onSubmit(userResponse, writerName);
@@ -38,6 +41,7 @@ const QuizForm: React.FC<QuizFormProps> = ({
   };
 
   return (
+      <>
     <form
       className="flex items-center justify-center gap-3"
       onSubmit={handleSubmit}
@@ -57,6 +61,10 @@ const QuizForm: React.FC<QuizFormProps> = ({
         <ArrowRight color="white" />
       </button>
     </form>
+        {wrong && (
+            <h1 className={"text-lg text-red-600 font-bold m-3 text-center"}>{author}</h1>
+        )}
+  </>
   );
 };
 

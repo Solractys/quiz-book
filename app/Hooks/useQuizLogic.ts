@@ -17,7 +17,6 @@ export const useQuizLogic = () => {
         setCount(Math.floor(Math.random() * books.length) + 1);
       } else {
         setBooks([
-          { title: "O Senhor dos Anéis", writer: "J.R.R. Tolkien" },
           { title: "Pride and Prejudice", writer: "Jane Austen" },
         ]);
       }
