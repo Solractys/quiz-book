@@ -92,7 +92,9 @@ const QuizComponent = () => {
         </span>
       </div>
       <h1 className="text-center text-2xl">Quem escreveu o livro</h1>
+      <span className="text-center text-xl font-bold">
       &ldquo;{books[count]?.title}&ldquo;?
+      </span>
       <QuizForm
           onSubmit={checkAnswer}
           currentBook={books[count]}
