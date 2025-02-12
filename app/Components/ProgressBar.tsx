@@ -5,10 +5,6 @@ interface ProgressBarProps {
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
-  /*
-  ts-ignore
-   */
-
   return (
     <>
       <div className="w-3/6 top-36 absolute bg-transparent flex justify-center items-center h-fit">
@@ -24,7 +20,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
             "--value": progress,
             "--size": "60px",
             "--thickness": "9px",
-          }}
+          } as React.CSSProperties}
           role="progressbar"
         ></div>
       </div>
@@ -41,7 +37,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
             "--value": progress,
             "--size": "60px",
             "--thickness": "9px",
-          }}
+          } as React.CSSProperties}
           role="progressbar"
         ></div>
       </div>
