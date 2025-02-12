@@ -5,6 +5,10 @@ interface ProgressBarProps {
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
+  /*
+  ts-ignore
+   */
+
   return (
     <>
       <div className="w-3/6 top-36 absolute bg-transparent flex justify-center items-center h-fit">
