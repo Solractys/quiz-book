@@ -1,5 +1,5 @@
 import Book from "../Models/Book";
-function filterBooks(apiResponse: any): Book[] {
+function filterBooks(apiResponse: unknown): Book[] {
   const allowedAuthors = [
     "J.R.R. Tolkien",
     "Jane Austen",
@@ -43,12 +43,14 @@ function filterBooks(apiResponse: any): Book[] {
 
   const results = Array.isArray(apiResponse) ? apiResponse : [apiResponse];
 
-  const filteredBooks = results
-    .filter((book: Book) => allowedAuthors.includes(book.writer))
-    .map((book: Book) => ({
-      title: book.title,
-      writer: book.writer,
-    }));
+  let filteredBooks: { title: string; writer: string }[];
+  // eslint-disable-next-line prefer-const
+  filteredBooks = results
+      .filter((book: Book) => allowedAuthors.includes(book.writer))
+      .map((book: Book) => ({
+        title: book.title,
+        writer: book.writer,
+      }));
 
   return filteredBooks;
 }
