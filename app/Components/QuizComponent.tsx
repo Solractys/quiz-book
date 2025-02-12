@@ -91,17 +91,13 @@ const QuizComponent = () => {
           Pontos: <b className="text-yellow-600 font-bold">{points}</b>
         </span>
       </div>
-      <div className="justify-center items-center flex space-y-3 flex-col">
-        <h1 className="text-center text-2xl">Quem escreveu o livro</h1>
-        <em className="text-center text-2xl font-bold">
-          "{books[count]?.title}"?
-        </em>
-        <QuizForm
+      <h1 className="text-center text-2xl">Quem escreveu o livro</h1>
+      &ldquo;{books[count]?.title}&ldquo;?
+      <QuizForm
           onSubmit={checkAnswer}
           currentBook={books[count]}
           isDisabled={isDisable}
-        />
-      </div>
+      />
       <ProgressBar progress={progress} />
     </div>
   );

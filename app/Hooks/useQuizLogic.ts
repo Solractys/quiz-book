@@ -6,7 +6,7 @@ export const useQuizLogic = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [count, setCount] = useState<number>(0);
   const [points, setPoints] = useState<number>(0);
-  const [canStart, setCanStart] = useState(true);
+  const canStart = true;
   const [needToRestart, setNeedToRestart] = useState<boolean>(false);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 function normalizeString(name: string): string {
-  var newName = "";
+  let newName = "";
   for (let i = 0; i < name.length; i++) {
     if (!(name[i] === ".") && !(name[i] === " ")) {
       newName += name[i];
